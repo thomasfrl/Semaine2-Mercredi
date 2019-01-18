@@ -5,6 +5,8 @@ require_relative 'journalists_list.rb'
 
 def methode_connect
 	# quelques lignes qui appellent les clés d'API de ton fichier .env
+	Dotenv.load
+
 	client = Twitter::REST::Client.new do |config|
 	  config.consumer_key        = ENV["TWITTER_API_KEY"]
 	  config.consumer_secret     = ENV["TWITTER_API_SECRET"]
@@ -54,12 +56,18 @@ def methode_follow(client)
 	end
 end
 
-def methode_tweet_streaming(client)
-	client.filter(track: "@bonjour_monde") do |tweet|
-	  client.favorite tweet
-	  #client.follow tweet.user
+def methode_tweet_streaming(client_stream,client_ress)
+	client_stream.filter(track: "@bonjour_monde") do |tweet|
+	  client_ress.favorite tweet
+	  client_ress.follow tweet.user
 	  puts "cool un tweet"
 	end
 end
 
-methode_tweet_streaming(methode_streaming)
+def perform
+	client_ress = methode_connect
+	client_stream = methode_streaming
+	methode_tweet_streaming(client_stream,client_ress)
+end
+
+perform
